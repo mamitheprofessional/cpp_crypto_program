@@ -1,14 +1,19 @@
+
+
 #include <iostream>
 #include <string>
 #include <fstream>
 using namespace std;
+
+/* branch denemesi */
 
 /*bu proje kullanicidan bir metin aliyor aldigi metni once ters ceviriyor
 sonra ters cevrilmis metni ortasindan ikiye ayiriyor
 sonra her iki degiskeninde harflerini sayilarini ve bazi ozel karakterlerini atbash yontemiyle
 ceviriyor fakat bunu yaparken birinci yarisina ayri ikinci yarisina ayri kural uyguluyor
 sonra bu iki ters cevrilmis cümle parcasını ters bir sekilde birlestiriyor
-en son bunlarin ascii tablosuna gore karsiligini .txt uzantılı belge uzerinden yazıp okuyor*/
+sonra bunlarin ascii tablosuna gore karsiligini aliyor
+en son bu ascii degerlerini 1 sayi kaydiriyor*/
 
 string ters_cevir(string metin); //bu fonksiyon bir diziyi alip ters ceviriyor
 void ikiye_bol(string metin, string &ilk_yarim, string &ikinci_yarim); //bu ise metnin ortasini 2 ye bolup 2 ayri degiskene atiyor
@@ -56,7 +61,7 @@ int main() {
         dosya_yaz.close();
         break;
     case 'd':
-        cout << "kırılan: ";
+        cout << "kırılan sifreniz: ";
         dosya_oku.open("sifreli_metin.txt");
         if(dosya_oku.is_open()){
 
@@ -103,7 +108,7 @@ string ascii_donustur(string metin) {
     while (index < metin.length()) {
         char karakter = metin[index];
         int ascii = karakter;
-        ascii_metin += to_string(ascii); // ASCII değerini stringe çevirerek ekle
+        ascii_metin += to_string(ascii+1) + " "; // ASCII değerini stringe çevirerek ekle, boşlukla ayır
         index++;
     }
     return ascii_metin;
@@ -336,19 +341,30 @@ void ikiye_bol(string metin, string &ilk_yarim, string &ikinci_yarim) {
 }
 
 
+
 //----------------burdan sonrasi sifre kirici fonksyonlar-----------------//
 
 string asciiden_metine_donustur(string ascii_metin) {
-    string metin = ""; //bos bir string ile programi baslattim
+    string metin = ""; // Boş bir string ile programı başlattım
     int index = 0;
     while (index < ascii_metin.length()) {
-        int ascii = stoi(ascii_metin.substr(index, 3)); // stoi bir stringi integer a donusturur ayrica max 3 haneli asciileri tek tek substr ile seciyoruz
-        char donusum_karakter = static_cast<char>(ascii); //static_cast<tür> bir degiskeni baska degiskene donusturur burda ascii yi char a donusturduk ve char turunde donusum_karakter adli degiskene atadik
-        metin += donusum_karakter; // ascii okunan metindeki her bir karakteri tek tek okuyup aynı anda donusum karakterle donusturulmus char ifadeyi metin degiskenine ekliyor
-        index += 3; // Sonraki ASCII koduna geç
+        // ASCII değerlerini boşluk karakterine göre ayırarak alıyoruz
+        string ascii_str;
+        while (index < ascii_metin.length() && ascii_metin[index] != ' ') {
+            ascii_str += ascii_metin[index];
+            index++;
+        }
+        // ASCII değerini integer'a dönüştürüyoruz
+        int ascii = stoi(ascii_str)-1;
+        // Integer'ı karaktere dönüştürüyoruz
+        char donusum_karakter = static_cast<char>(ascii);
+        // Dönüştürülmüş karakteri metin değişkenine ekliyoruz
+        metin += donusum_karakter;
+        index++; // Boşluğu atlayarak bir sonraki ASCII koduna geç
     }
     return metin;
 }
+
 
 void kirilmis_harf_degistirici_ilk_yarim(string &metin) {
     for (int i = 0; i < metin.length(); ++i) {
@@ -435,6 +451,7 @@ void kirilmis_harf_degistirici_ilk_yarim(string &metin) {
         }
     }
 }
+
 
 void kirilmis_harf_degistir_ikinci_yarim(string &metin) {
     for (int i = 0; i < metin.length(); ++i) {
@@ -560,6 +577,7 @@ void sifrenin_sayi_karakter_degistir(string &metin) {
     }
 }
 
+
 void sifre_kirici_ikiye_bol(string metin, string &sifrelenmis_ilk_yarim, string &sifrelenmis_ikinci_yarim) {
     int n = metin.length(); //n degiskenine fonksyonun sayisal uzunlugunu atadim
     int orta_nokta = n / 2; //2 ye bolup orta noktaya atadim
@@ -567,6 +585,7 @@ void sifre_kirici_ikiye_bol(string metin, string &sifrelenmis_ilk_yarim, string 
     sifrelenmis_ilk_yarim = metin.substr(0, orta_nokta); //substr ile metin dizisini ilk karakterden kesilmis orta noktaya kadar aldim ve en son ilk yarim dizisine atadim
     sifrelenmis_ikinci_yarim = metin.substr(orta_nokta, n - orta_nokta); //kalan yarısınıda ikinci yarima atadim
 }
+
 
 string sifreli_metin_ters_cevir(string metin) {
     int n = metin.length();
@@ -579,4 +598,6 @@ string sifreli_metin_ters_cevir(string metin) {
 
     return metin;
 }
+
+
 
